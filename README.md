@@ -4,9 +4,11 @@
 和朋友组队角色太多，需要互相拖，那就分个上等马和下等马吧
 
 ## 环境
-- `vue3`
-- ui 组件 `naive-ui`
-- 拖拽组件 `vuedraggable`
+- `vue3` 
+- ui 组件 `naive-ui` 
+  - 自动引入 https://www.naiveui.com/zh-CN/os-theme/docs/import-on-demand
+  - 安装插件 `pnpm i unplugin-vue-components -D` `pnpm i -D unplugin-auto-import`
+- 拖拽组件 `vuedraggable` `pnpm i -S vuedraggable@next`
 
 
 ## 功能
@@ -14,3 +16,4 @@
 - [x] 填写表单
 - [ ] 保存到缓存
 - [ ] 导出导入
+

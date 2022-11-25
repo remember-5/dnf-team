@@ -1,3 +1,99 @@
+<script>
+import { defineComponent, reactive } from "vue";
+import { jobs } from "@/utils/hero.js";
+import draggable from "vuedraggable";
+import localdb from "@/utils/localstorage.js";
+
+export default defineComponent({
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "dnf编队",
+  display: "Two list header slot",
+  order: 14,
+  components: {
+    draggable,
+  },
+  data() {
+    return {
+      // 职业列表，tree需要
+      jobs: jobs,
+      // 用户输入的职业
+      inputList: [],
+      // 选中的职业
+      selectJob: reactive([]),
+      showModal: false,
+      formValue: reactive({
+        user: {
+          job: "",
+          reputation: "",
+          account: "",
+          dps: "",
+        },
+      }),
+      rules: reactive({
+        user: {
+          account: {
+            required: true,
+            message: "请输入玩家id",
+            trigger: "blur",
+          },
+          reputation: {
+            required: true,
+            message: "请输入名望",
+            trigger: ["input", "blur"],
+          },
+          dps: {
+            required: true,
+            message: "输入伤害/奶量",
+            trigger: ["input", "blur"],
+          },
+        },
+      }),
+      groups: reactive({}),
+      groupsIndex: 1,
+    };
+  },
+  created() {
+    this.inputList = localdb.get("inputList", []);
+    this.groups = localdb.get("groups", reactive({}));
+    this.groupsIndex = localdb.get("groupsIndex", 0);
+  },
+  methods: {
+    addGroup() {
+      const key = `list${this.groupsIndex}`;
+      this.groups[key] = [];
+      this.groupsIndex++;
+    },
+    saveLocalStorage() {
+      localdb.save("inputList", this.inputList);
+      localdb.save("groups", this.groups);
+      localdb.save("groupsIndex", this.groupsIndex);
+    },
+    // 保存职业
+    saveJob() {
+      let job = {
+        ...this.selectJob,
+        ...this.formValue.user,
+      };
+      this.inputList.push(job);
+      this.selectJob = "";
+      this.formValue.user = {};
+      this.showModal = false;
+    },
+    updateJob(value, option) {
+      this.selectJob = option;
+    },
+    resetInputJob() {
+      localdb.remove("inputList");
+      localdb.remove("groups");
+      // localdb.remove("groupsIndex");
+      this.inputList = [];
+      this.groups = [];
+      // this.groupsIndex = 1;
+    },
+  },
+});
+</script>
+
 <template>
   <n-space vertical size="large">
     <n-layout has-sider>
@@ -137,103 +233,8 @@
     </n-modal>
   </n-space>
 </template>
-<script>
-import { defineComponent, reactive } from "vue";
-import { jobs } from "@/utils/hero.js";
-import draggable from "vuedraggable";
-import localdb from "@/utils/localstorage.js";
 
-export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "dnf编队",
-  display: "Two list header slot",
-  order: 14,
-  components: {
-    draggable,
-  },
-  data() {
-    return {
-      // 职业列表，tree需要
-      jobs: jobs,
-      // 用户输入的职业
-      inputList: [],
-      // 选中的职业
-      selectJob: reactive([]),
-      showModal: false,
-      formValue: reactive({
-        user: {
-          job: "",
-          reputation: "",
-          account: "",
-          dps: "",
-        },
-      }),
-      rules: reactive({
-        user: {
-          account: {
-            required: true,
-            message: "请输入玩家id",
-            trigger: "blur",
-          },
-          reputation: {
-            required: true,
-            message: "请输入名望",
-            trigger: ["input", "blur"],
-          },
-          dps: {
-            required: true,
-            message: "输入伤害/奶量",
-            trigger: ["input", "blur"],
-          },
-        },
-      }),
-      groups: reactive({}),
-      groupsIndex: 1,
-    };
-  },
-  created() {
-    this.inputList = localdb.get("inputList", []);
-    this.groups = localdb.get("groups", reactive({}));
-    this.groupsIndex = localdb.get("groupsIndex", 0);
-  },
-  methods: {
-    addGroup() {
-      const key = `list${this.groupsIndex}`;
-      this.groups[key] = [];
-      this.groupsIndex++;
-    },
-    saveLocalStorage() {
-      localdb.save("inputList", this.inputList);
-      localdb.save("groups", this.groups);
-      localdb.save("groupsIndex", this.groupsIndex);
-    },
-    // 保存职业
-    saveJob() {
-      let job = {
-        ...this.selectJob,
-        ...this.formValue.user,
-      };
-      this.inputList.push(job);
-      this.selectJob = "";
-      this.formValue.user = {};
-      this.showModal = false;
-    },
-    updateJob(value, option) {
-      this.selectJob = option;
-    },
-    resetInputJob() {
-      localdb.remove("inputList");
-      localdb.remove("groups");
-      // localdb.remove("groupsIndex");
-      this.inputList = [];
-      this.groups = [];
-      // this.groupsIndex = 1;
-    },
-  },
-});
-</script>
-<style scoped></style>
-<style>
+<style scoped="scoped">
 .job-box {
   width: 300px;
 }
