@@ -7,6 +7,7 @@ specifiers:
   '@vue/eslint-config-prettier': ^7.0.0
   eslint: ^8.22.0
   eslint-plugin-vue: ^9.3.0
+  file-saver: ^2.0.5
   naive-ui: ^2.34.2
   pinia: ^2.0.26
   prettier: ^2.7.1
@@ -19,6 +20,7 @@ specifiers:
   vuedraggable: ^4.1.0
 
 dependencies:
+  file-saver: 2.0.5
   pinia: 2.0.26_vue@3.2.45
   vue: 3.2.45
   vue-router: 4.1.6_vue@3.2.45
@@ -1323,6 +1325,10 @@ packages:
     dependencies:
       flat-cache: 3.0.4
     dev: true
+
+  /file-saver/2.0.5:
+    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
+    dev: false
 
   /fill-range/7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
