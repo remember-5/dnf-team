@@ -147,6 +147,7 @@ import {
   NInput,
   NTreeSelect,
 } from "naive-ui";
+import { jobs } from "@/utils/hero.js";
 
 import draggable from "vuedraggable";
 let id = 1;
@@ -217,6 +218,9 @@ export default defineComponent({
         { name: "刃影", id: 3, avatar: require("@/assets/avatar/1.png") },
       ],
     };
+  },
+  created() {
+    console.log(jobs);
   },
   methods: {
     add() {
