@@ -2,6 +2,7 @@ export const jobs = [
   {
     key: 1000,
     label: "鬼剑士·男",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 1,
@@ -33,6 +34,7 @@ export const jobs = [
   {
     key: 1001,
     label: "鬼剑士·女",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 6,
@@ -64,6 +66,7 @@ export const jobs = [
   {
     key: 1002,
     label: "格斗家·男",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 11,
@@ -90,6 +93,7 @@ export const jobs = [
   {
     key: 1003,
     label: "格斗家·女",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 16,
@@ -116,6 +120,7 @@ export const jobs = [
   {
     key: 1004,
     label: "神枪手·男",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 21,
@@ -147,6 +152,7 @@ export const jobs = [
   {
     key: 1005,
     label: "神枪手·女",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 26,
@@ -173,6 +179,7 @@ export const jobs = [
   {
     key: 1006,
     label: "魔法师·男",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 31,
@@ -204,6 +211,7 @@ export const jobs = [
   {
     key: 1007,
     label: "魔法师·女",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 36,
@@ -235,6 +243,7 @@ export const jobs = [
   {
     key: 1008,
     label: "圣职者·男",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 41,
@@ -261,6 +270,7 @@ export const jobs = [
   {
     key: 1009,
     label: "圣职者·女",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 46,
@@ -287,6 +297,7 @@ export const jobs = [
   {
     key: 1010,
     label: "暗夜使者",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 51,
@@ -313,6 +324,7 @@ export const jobs = [
   {
     key: 1011,
     label: "守护者",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 56,
@@ -339,6 +351,7 @@ export const jobs = [
   {
     key: 1012,
     label: "魔枪士",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 61,
@@ -365,6 +378,7 @@ export const jobs = [
   {
     key: 1013,
     label: "枪剑士",
+    avatar: require("@/assets/avatar/75.png"),
     children: [
       {
         key: 66,
@@ -391,6 +405,8 @@ export const jobs = [
   {
     key: 1014,
     label: "外传职业",
+    avatar: require("@/assets/avatar/75.png"),
+    disabled: true,
     children: [
       {
         key: 71,
