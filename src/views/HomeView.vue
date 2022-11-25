@@ -1,85 +1,87 @@
 <template>
-  <div class="row">
-    <div class="col-4">
-      <h3>队伍信息1</h3>
-
-      <draggable
-        id="first"
-        data-source="juju"
-        :list="list1"
-        class="list-group"
-        group="a"
-        item-key="name"
-      >
-        <template #item="{ element }">
-          <div class="list-group-item">
-            <n-avatar :size="48" :src="element.avatar" />
-            {{ element.name }}
+  <n-space vertical size="large">
+    <n-layout has-sider>
+      <n-layout>
+        <!--        <n-layout-header>颐和园路</n-layout-header>-->
+        <n-layout-content content-style="padding: 20px;">
+          <div v-for="(item, key, index) in groups" :key="key">
+            <h3>队伍{{ index + 1 }}信息</h3>
+            <draggable
+              id="first"
+              data-source="juju"
+              :list="item"
+              class="list-group"
+              group="a"
+              item-key="name"
+              style="border-style: solid; height: 100px; display: flex"
+            >
+              <template #item="{ element }">
+                <div class="list-group-item">
+                  <n-avatar size="30" :src="element.avatar" />
+                  <p>id: {{ element.account }}</p>
+                </div>
+              </template>
+              <!--              <template #item="{ element }">-->
+              <!--                <n-popover trigger="hover" :delay="500" :duration="500">-->
+              <!--                  <template #trigger>-->
+              <!--                    <div class="list-group-item">-->
+              <!--                      <n-avatar size="48" :src="element.avatar" />-->
+              <!--                      {{ element.account }}-->
+              <!--                    </div>-->
+              <!--                  </template>-->
+              <!--                  <span>-->
+              <!--                    <p>职业: {{ element.label }}</p>-->
+              <!--                    <p>名望: {{ element.reputation }}</p>-->
+              <!--                    <p>伤害/奶量: {{ element.dps }}</p>-->
+              <!--                  </span>-->
+              <!--                </n-popover>-->
+              <!--              </template>-->
+            </draggable>
           </div>
-        </template>
-        <template #footer>
-          <div class="btn-group list-group-item" role="group">
-            <button class="btn btn-secondary" @click="add">Add</button>
-            <button class="btn btn-secondary" @click="replace">Replace</button>
-          </div>
-        </template>
-      </draggable>
-    </div>
+          <n-button @click="addGroup">添加队伍</n-button>
+        </n-layout-content>
+        <!--        <n-layout-footer>成府路</n-layout-footer>-->
+      </n-layout>
+      <n-layout-sider content-style="padding: 20px;">
+        <div>
+          <h3>职业列表</h3>
 
-    <div class="col-4">
-      <h3>队伍信息2</h3>
-
-      <draggable
-        id="first"
-        data-source="juju"
-        :list="list2"
-        class="list-group"
-        group="a"
-        item-key="name"
-      >
-        <template #item="{ element }">
-          <div class="list-group-item">
-            <n-avatar :size="48" :src="element.avatar" />
-            {{ element.name }}
-          </div>
-        </template>
-
-        <template #footer>
-          <div class="btn-group list-group-item" role="group">
-            <button class="btn btn-secondary" @click="add">Add</button>
-            <button class="btn btn-secondary" @click="replace">Replace</button>
-          </div>
-        </template>
-      </draggable>
-    </div>
-
-    <div class="col-4">
-      <h3>职业列表</h3>
-
-      <draggable :list="list3" class="list-group" group="a" item-key="name">
-        <template #item="{ element }">
-          <div class="list-group-item item">
-            <n-avatar :size="48" :src="element.avatar" />
-            {{ element.name }}
-          </div>
-        </template>
-
-        <template #header>
-          <div
-            class="btn-group list-group-item"
-            role="group"
-            aria-label="Basic example"
+          <draggable
+            :list="inputList"
+            class="list-group"
+            group="a"
+            item-key="name"
+            style="border-style: solid; height: 100px"
           >
-            <button class="btn btn-secondary" @click="add2">Add</button>
-            <button class="btn btn-secondary" @click="replace2">Replace</button>
-          </div>
-        </template>
-      </draggable>
-    </div>
+            <template #item="{ element }">
+              <div class="list-group-item item">
+                <n-avatar size="48" :src="element.avatar" />
+                {{ element.account }}
+              </div>
+            </template>
 
-    <rawDisplayer class="col-2" :value="list1" title="List" />
-
-    <rawDisplayer class="col-2" :value="list2" title="List2" />
+            <template #header>
+              <div
+                class="btn-group list-group-item"
+                role="group"
+                aria-label="Basic example"
+              ></div>
+            </template>
+          </draggable>
+          <n-space style="padding: 30px">
+            <n-button-group vertical>
+              <n-button @click="this.showModal = true"> 新增 </n-button>
+              <n-button type="primary" @click="saveLocalStorage">
+                保存到缓存
+              </n-button>
+              <n-button type="warning" @click="resetInputJob">
+                重置并清除缓存
+              </n-button>
+            </n-button-group>
+          </n-space>
+        </div>
+      </n-layout-sider>
+    </n-layout>
 
     <n-modal
       v-model:show="showModal"
@@ -90,10 +92,11 @@
       <template #header>
         <div>添加职业</div>
       </template>
+
       <div>
         <n-form
           ref="formRef"
-          :label-width="80"
+          label-width="auto"
           :model="formValue"
           label-placement="left"
           :rules="rules"
@@ -101,146 +104,130 @@
             maxWidth: '640px',
           }"
         >
-          <n-form-item label="账号" path="user.name">
+          <n-form-item label="职业" path="user.job">
             <n-tree-select
               :options="jobs"
-              default-value="Drive My Car"
+              default-value=""
               @update:value="updateJob"
             />
           </n-form-item>
-          <n-form-item label="账号" path="user.name">
+          <n-form-item label="玩家id" path="user.account">
             <n-input
-              v-model:value="formValue.user.name"
-              placeholder="输入账号"
+              v-model:value="formValue.user.account"
+              placeholder="玩家id"
             />
           </n-form-item>
-          <n-form-item label="名望" path="user.name">
+          <n-form-item label="名望" path="user.reputation">
             <n-input
-              v-model:value="formValue.user.name"
+              v-model:value="formValue.user.reputation"
               placeholder="输入名望"
             />
           </n-form-item>
-          <n-form-item label="伤害" path="user.age">
+          <n-form-item label="伤害/奶量" path="user.dps">
             <n-input
-              v-model:value="formValue.user.age"
-              placeholder="输入伤害"
+              v-model:value="formValue.user.dps"
+              placeholder="输入伤害/奶量"
             />
           </n-form-item>
         </n-form>
       </div>
       <template #action>
-        <n-button attr-type="button" @click="handleValidateClick">
-          保存
-        </n-button>
+        <n-button attr-type="button" @click="saveJob">保存</n-button>
       </template>
     </n-modal>
-  </div>
+  </n-space>
 </template>
 <script>
 import { defineComponent, reactive } from "vue";
-import {
-  NAvatar,
-  NModal,
-  NForm,
-  NFormItem,
-  NButton,
-  NInput,
-  NTreeSelect,
-} from "naive-ui";
 import { jobs } from "@/utils/hero.js";
-
 import draggable from "vuedraggable";
-let id = 1;
+import localdb from "@/utils/localstorage.js";
+
 export default defineComponent({
-  name: "two-list-headerslots",
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "dnf编队",
   display: "Two list header slot",
   order: 14,
   components: {
     draggable,
-    NAvatar,
-    NModal,
-    NForm,
-    NFormItem,
-    NButton,
-    NInput,
-    NTreeSelect,
   },
   data() {
     return {
-      jobs: [
-        {
-          key: 100,
-          label: "男鬼剑",
-          children: [
-            {
-              key: 101,
-              label: "剑魂",
-              avatar: require("@/assets/avatar/1.png"),
-            },
-            {
-              key: 102,
-              label: "红狗",
-              avatar: require("@/assets/avatar/1.png"),
-            },
-          ],
-        },
-      ],
+      // 职业列表，tree需要
+      jobs: jobs,
+      // 用户输入的职业
+      inputList: [],
+      // 选中的职业
+      selectJob: reactive([]),
       showModal: false,
       formValue: reactive({
         user: {
-          name: "",
-          age: "",
+          job: "",
+          reputation: "",
+          account: "",
+          dps: "",
         },
-        phone: "",
       }),
       rules: reactive({
         user: {
-          name: {
+          account: {
             required: true,
-            message: "请输入姓名",
+            message: "请输入玩家id",
             trigger: "blur",
           },
-          age: {
+          reputation: {
             required: true,
-            message: "请输入年龄",
+            message: "请输入名望",
+            trigger: ["input", "blur"],
+          },
+          dps: {
+            required: true,
+            message: "输入伤害/奶量",
             trigger: ["input", "blur"],
           },
         },
-        phone: {
-          required: true,
-          message: "请输入电话号码",
-          trigger: ["input"],
-        },
       }),
-      list1: [],
-      list2: [],
-      list3: [
-        { name: "刃影", id: 3, avatar: require("@/assets/avatar/1.png") },
-      ],
+      groups: reactive({}),
+      groupsIndex: 1,
     };
   },
   created() {
-    console.log(jobs);
+    this.inputList = localdb.get("inputList", []);
+    this.groups = localdb.get("groups", reactive({}));
+    this.groupsIndex = localdb.get("groupsIndex", 0);
   },
   methods: {
-    add() {
-      this.list1.push({ name: "Juan " + id, id: id++ });
+    addGroup() {
+      const key = `list${this.groupsIndex}`;
+      this.groups[key] = [];
+      this.groupsIndex++;
     },
-    replace() {
-      this.list1 = [{ name: "Edgard", id: id++ }];
+    saveLocalStorage() {
+      localdb.save("inputList", this.inputList);
+      localdb.save("groups", this.groups);
+      localdb.save("groupsIndex", this.groupsIndex);
     },
-    add2() {
-      this.showModal = true;
-      // this.list3.push({ name: "Juan " + id, id: id++ });
+    // 保存职业
+    saveJob() {
+      let job = {
+        ...this.selectJob,
+        ...this.formValue.user,
+      };
+      this.inputList.push(job);
+      this.selectJob = "";
+      this.formValue.user = {};
+      this.showModal = false;
     },
-    replace2() {
-      this.list3 = [{ name: "Edgard", id: id++ }];
-    },
-    onPositiveClick() {},
-    onNegativeClick() {},
-    handleValidateClick() {},
     updateJob(value, option) {
-      console.log(value, option);
+      this.selectJob = option;
+    },
+    resetInputJob() {
+      localdb.remove("inputList");
+      localdb.remove("groups");
+      // localdb.remove("groupsIndex");
+      this.inputList = [];
+      this.groups = [];
+      // this.groupsIndex = 1;
     },
   },
 });
