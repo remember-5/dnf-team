@@ -2,7 +2,7 @@
   <n-grid cols="3" item-responsive responsive="screen">
     <n-grid-item span="0 m:1 l:2">
       <div class="light-green">
-        <div v-for="(item, key, index) in groups" :key="key" class="group-box">
+        <div v-for="(item, index) in groupArray" :key="index" class="group-box">
           <span>队伍{{ index + 1 }}信息</span>
           <draggable
             class="group-draggable"
@@ -52,11 +52,10 @@
       <div class="green">
         <span>职业列表</span>
         <draggable
-          :list="inputList"
-          class="list-group"
+          :list="heroStore.heroArray"
+          class="hero-box"
           group="a"
           item-key="name"
-          style="border-style: solid; height: 250px"
           @change="saveLocalStorage"
         >
           <template #item="{ element }">
@@ -167,12 +166,12 @@
 import { defineComponent, reactive } from "vue";
 import { jobs } from "@/utils/hero.js";
 import draggable from "vuedraggable";
-import localdb from "@/utils/localstorage.js";
-import { saveAs } from "file-saver"; // npm i file-saver
+
+import { heroStore } from "@/stores/counter";
+import { mapStores } from "pinia"; // npm i file-saver
 export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "dnf编队",
-  display: "Two list header slot",
+  name: "dnf-team",
+  display: "编队小组首",
   order: 14,
   components: {
     draggable,
@@ -181,8 +180,6 @@ export default defineComponent({
     return {
       // 职业列表，tree需要
       jobs: jobs,
-      // 用户输入的职业
-      inputList: [],
       // 选中的职业
       selectJob: reactive([]),
       showModal: false,
@@ -190,10 +187,10 @@ export default defineComponent({
       inputData: "",
       formValue: reactive({
         user: {
-          job: "",
-          reputation: "",
-          account: "",
-          dps: "",
+          job: "", // 职业
+          reputation: "", // 名望
+          account: "", // 玩家id
+          dps: "", // 输出
         },
       }),
       rules: reactive({
@@ -215,34 +212,35 @@ export default defineComponent({
           },
         },
       }),
-      groups: reactive({}),
-      groupsIndex: 1,
     };
   },
-  created() {
-    this.inputList = localdb.get("inputList", []);
-    this.groups = localdb.get("groups", reactive({}));
-    this.groupsIndex = localdb.get("groupsIndex", 0);
+  setup() {
+    heroStore().getLocalStorage();
+  },
+  computed: {
+    ...mapStores(heroStore),
+    groupArray() {
+      return this.heroStore.groupArray;
+    },
+    heroArray() {
+      return this.heroStore.heroArray;
+    },
   },
   methods: {
     addGroup() {
-      const key = `list${this.groupsIndex}`;
-      this.groups[key] = [];
-      this.groupsIndex++;
+      this.heroStore.appendGroup([]);
       this.saveLocalStorage();
     },
     saveLocalStorage() {
-      localdb.save("inputList", this.inputList);
-      localdb.save("groups", this.groups);
-      localdb.save("groupsIndex", this.groupsIndex);
+      this.heroStore.saveLocalStorage();
     },
     // 保存职业
     saveJob() {
-      let job = {
+      let hero = {
         ...this.selectJob,
         ...this.formValue.user,
       };
-      this.inputList.push(job);
+      this.heroStore.appendHero(hero);
       this.selectJob = "";
       this.formValue.user = {};
       this.showModal = false;
@@ -252,37 +250,14 @@ export default defineComponent({
       this.selectJob = option;
     },
     inputJsonData() {
-      if (this.inputData) {
-        let json = JSON.parse(this.inputData);
-        this.inputList = json.inputList;
-        this.groups = json.groups;
-        this.groupsIndex = json.groupsIndex;
-        this.inputModal = false
-        this.saveLocalStorage()
-      }
+      this.heroStore.inputJsonData(this.inputData);
+      this.inputModal = false;
     },
     exportData() {
-      // 导出json文件;
-      // new Bolb()第一个参数就是我们要导出的json数据
-      let json = {
-        inputList: this.inputList,
-        groups: this.groups,
-        groupsIndex: this.groupsIndex,
-      };
-
-      const blob = new Blob([JSON.stringify(json)], {
-        type: "text/plain;charset=utf-8",
-      });
-      console.log("导出json", blob);
-      saveAs(blob, `dnf.json`); // 后面的是json文件的默认名称
+      this.heroStore.exportJsonData();
     },
     resetInputJob() {
-      localdb.remove("inputList");
-      localdb.remove("groups");
-      localdb.remove("groupsIndex");
-      this.inputList = [];
-      this.groups = {};
-      this.groupsIndex = 1;
+      this.heroStore.resetData();
     },
   },
 });
@@ -305,6 +280,10 @@ export default defineComponent({
   border-style: solid;
   padding: 10px;
   height: 120px;
+  display: flex;
+}
+.hero-box {
+  border-style: solid;
   display: flex;
 }
 </style>
