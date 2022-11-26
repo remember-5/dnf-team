@@ -99,6 +99,15 @@
             重置并清除缓存
           </n-button>
         </div>
+
+        <div style="padding-top: 30px">
+          <p>暂时只支持`职业列表`的修改和删除</p>
+          源码前往->
+          <n-button strong secondary type="tertiary" @click="toGithub">
+            Github
+          </n-button>
+        </div>
+
       </div>
     </n-grid-item>
   </n-grid>
@@ -288,6 +297,9 @@ export default defineComponent({
     },
     resetInputJob() {
       this.heroStore.resetData();
+    },
+    toGithub() {
+      window.location.href = "https://github.com/remember-5/dnf-team";
     },
   },
 });
