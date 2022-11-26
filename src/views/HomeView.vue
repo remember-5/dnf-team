@@ -102,6 +102,7 @@
 
         <div style="padding-top: 30px">
           <p>暂时只支持`职业列表`的修改和删除</p>
+          <p>点击职业头像，即可进入编辑模式</p>
           源码前往->
           <n-button strong secondary type="tertiary" @click="toGithub">
             Github
