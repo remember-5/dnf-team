@@ -145,6 +145,13 @@
       </n-form>
     </div>
     <template #action>
+      <n-button
+        v-if="isEditState"
+        attr-type="button"
+        type="error"
+        @click="deleteHero"
+        >删除</n-button
+      >
       <n-button attr-type="button" @click="saveHero">保存</n-button>
     </template>
   </n-modal>
@@ -245,6 +252,9 @@ export default defineComponent({
       } else {
         this.heroStore.appendHero(this.hero);
       }
+      this.resetHero();
+    },
+    resetHero() {
       this.isEditState = false;
       this.hero = {};
       this.heroModal = false;
@@ -255,6 +265,10 @@ export default defineComponent({
       this.hero = { ...this.hero, ...data };
       this.isEditState = true;
       this.heroModal = true;
+    },
+    deleteHero() {
+      this.heroStore.deleteHero(this.heroArraySelectIndex);
+      this.resetHero();
     },
     // 点击关闭按钮，清楚状态
     clearHero() {
