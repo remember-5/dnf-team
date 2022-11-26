@@ -39,6 +39,9 @@ export const heroStore = defineStore("hero", {
     getLocalStorage() {
       this.heroArray = localdb.get("heroArray", []);
       this.groupArray = localdb.get("groupArray", []);
+      if (this.groupArray.length === 0) {
+        this.groupArray.push([]);
+      }
     },
     exportJsonData() {
       // 导出json文件;
