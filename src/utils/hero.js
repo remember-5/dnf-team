@@ -1,4 +1,4 @@
-export const jobs = [
+export const jobArray = [
   {
     key: 1000,
     label: "鬼剑士·男",

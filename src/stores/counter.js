@@ -30,6 +30,9 @@ export const heroStore = defineStore("hero", {
       localdb.save("heroArray", this.heroArray);
       localdb.save("groupArray", this.groupArray);
     },
+    editHeroArray(index, hero) {
+      this.heroArray[index] = hero;
+    },
     getLocalStorage() {
       this.heroArray = localdb.get("heroArray", []);
       this.groupArray = localdb.get("groupArray", []);
