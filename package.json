@@ -13,7 +13,11 @@
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
     "vuedraggable": "^4.1.0",
-    "file-saver": "^2.0.5"
+    "file-saver": "^2.0.5",
+    "@syncedstore/core": "^0.4.2",
+    "yjs": "^13.5.42",
+    "y-websocket": "^1.4.5",
+    "y-webrtc": "^10.2.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",

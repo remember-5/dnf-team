@@ -107,7 +107,14 @@
           <n-button strong secondary type="tertiary" @click="toGithub">
             Github
           </n-button>
+          <n-input v-model:value="text"></n-input>
         </div>
+        <n-button strong secondary type="tertiary" @click="changeText">
+          ++++++
+        </n-button>
+
+
+        <p v-for="(item, index) in store.todos" :key="index">{{item}}</p>
 
       </div>
     </n-grid-item>
@@ -184,11 +191,20 @@
 
 <script>
 import { defineComponent, reactive } from "vue";
+
+import { store } from "./yjs-store.js";
+import * as Vue from "vue";
+import { enableVueBindings } from "@syncedstore/core";
+
+// make SyncedStore use Vuejs internally
+enableVueBindings(Vue);
+
 import { jobArray } from "@/utils/hero.js";
 import draggable from "vuedraggable";
 
 import { heroStore } from "@/stores/counter";
 import { mapStores } from "pinia"; // npm i file-saver
+
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "dnf",
@@ -199,6 +215,8 @@ export default defineComponent({
   },
   data() {
     return {
+      text: "",
+      store,
       // 职业列表，tree需要
       jobs: reactive(jobArray),
       hero: reactive({
@@ -238,6 +256,7 @@ export default defineComponent({
   setup() {
     heroStore().getLocalStorage();
   },
+  mounted() {},
   computed: {
     ...mapStores(heroStore),
     groupArray() {
@@ -248,6 +267,9 @@ export default defineComponent({
     },
   },
   methods: {
+    changeText() {
+      this.store.todos.push(this.text);
+    },
     addGroup() {
       this.heroStore.appendGroup([]);
     },
