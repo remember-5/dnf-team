@@ -1,13 +1,16 @@
 import { syncedStore, getYjsDoc } from "@syncedstore/core";
 import { WebsocketProvider } from "y-websocket";
+import { reactive } from "vue";
 
-export const store = syncedStore({ todos: [], fragment: "xml" });
+export const yjsstore = syncedStore(
+  reactive({ groupArray: [], heroArray: [] })
+);
 
 // Create a document that syncs automatically using Y-WebRTC
-const doc = getYjsDoc(store);
+const doc = getYjsDoc(yjsstore);
 
 const wsProvider = new WebsocketProvider(
-  "ws://localhost:1234",
+  "ws://192.168.161.80:1234",
   "my-roomname",
   doc
 );

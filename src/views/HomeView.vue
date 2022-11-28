@@ -8,10 +8,10 @@
             class="group-draggable"
             id="first"
             data-source="juju"
-            :list="item"
+            v-model="groupArray[index]"
             group="a"
             item-key="name"
-            @change="saveLocalStorage"
+            @change="groupArrayChange(index, $event)"
           >
             <template #item="{ element }">
               <div class="list-group-item">
@@ -27,21 +27,6 @@
                 </div>
               </div>
             </template>
-            <!--              <template #item="{ element }">-->
-            <!--                <n-popover trigger="hover" :delay="500" :duration="500">-->
-            <!--                  <template #trigger>-->
-            <!--                    <div class="list-group-item">-->
-            <!--                      <n-avatar size="48" :src="element.avatar" />-->
-            <!--                      {{ element.account }}-->
-            <!--                    </div>-->
-            <!--                  </template>-->
-            <!--                  <span>-->
-            <!--                    <p>职业: {{ element.label }}</p>-->
-            <!--                    <p>名望: {{ element.reputation }}</p>-->
-            <!--                    <p>伤害/奶量: {{ element.dps }}</p>-->
-            <!--                  </span>-->
-            <!--                </n-popover>-->
-            <!--              </template>-->
           </draggable>
         </div>
         <div style="float: right">
@@ -57,7 +42,7 @@
           class="hero-box"
           group="a"
           item-key="name"
-          @change="saveLocalStorage"
+          @change="heroArrayChange"
         >
           <template #item="{ element, index }">
             <div
@@ -75,14 +60,6 @@
                 </n-gradient-text>
               </div>
             </div>
-          </template>
-
-          <template #header>
-            <div
-              class="btn-group list-group-item"
-              role="group"
-              aria-label="Basic example"
-            ></div>
           </template>
         </draggable>
         <div class="btn-box">
@@ -109,13 +86,6 @@
           </n-button>
           <n-input v-model:value="text"></n-input>
         </div>
-        <n-button strong secondary type="tertiary" @click="changeText">
-          ++++++
-        </n-button>
-
-
-        <p v-for="(item, index) in store.todos" :key="index">{{item}}</p>
-
       </div>
     </n-grid-item>
   </n-grid>
@@ -192,18 +162,18 @@
 <script>
 import { defineComponent, reactive } from "vue";
 
-import { store } from "./yjs-store.js";
+import { yjsstore } from "./yjs-store.js";
 import * as Vue from "vue";
 import { enableVueBindings } from "@syncedstore/core";
-
-// make SyncedStore use Vuejs internally
-enableVueBindings(Vue);
 
 import { jobArray } from "@/utils/hero.js";
 import draggable from "vuedraggable";
 
 import { heroStore } from "@/stores/counter";
 import { mapStores } from "pinia"; // npm i file-saver
+
+// make SyncedStore use Vuejs internally
+enableVueBindings(Vue);
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -216,7 +186,9 @@ export default defineComponent({
   data() {
     return {
       text: "",
-      store,
+      yjsstore,
+      // groupArray: [],
+      // heroArray: [],
       // 职业列表，tree需要
       jobs: reactive(jobArray),
       hero: reactive({
@@ -253,36 +225,49 @@ export default defineComponent({
       }),
     };
   },
-  setup() {
-    heroStore().getLocalStorage();
+  setup() {},
+  created() {
+    // this.groupArray = yjsstore.groupArray;
+    // this.heroArray = yjsstore.heroArray;
   },
-  mounted() {},
+  watch: {},
+  mounted() {
+    // this.$nextTick(() => {
+    //   this.groupArray = JSON.parse(JSON.stringify(this.yjsstore.groupArray));
+    //   this.heroArray = JSON.parse(JSON.stringify(this.yjsstore.heroArray));
+    // });
+  },
   computed: {
     ...mapStores(heroStore),
-    groupArray() {
-      return this.heroStore.groupArray;
+    groupArray: {
+      get() {
+        this.heroStore.$patch({
+          groupArray: JSON.parse(JSON.stringify(this.yjsstore.groupArray)),
+        });
+        return JSON.parse(JSON.stringify(this.yjsstore.groupArray));
+      },
     },
-    heroArray() {
-      return this.heroStore.heroArray;
+    heroArray: {
+      get() {
+        this.heroStore.$patch({
+          heroArray: JSON.parse(JSON.stringify(this.yjsstore.heroArray)),
+        });
+        return JSON.parse(JSON.stringify(this.yjsstore.heroArray));
+      },
     },
   },
   methods: {
-    changeText() {
-      this.store.todos.push(this.text);
-    },
     addGroup() {
-      this.heroStore.appendGroup([]);
-    },
-    saveLocalStorage() {
-      this.heroStore.saveLocalStorage();
+      this.yjsstore.groupArray.push([]);
     },
     // 保存职业
     saveHero() {
       // 编辑状态
       if (this.isEditState) {
-        this.heroStore.editHeroArray(this.heroArraySelectIndex, this.hero);
+        this.heroArray[this.heroArraySelectIndex] = this.hero;
+        this.yjsstore.heroArray.splice(this.heroArraySelectIndex, 1, this.hero);
       } else {
-        this.heroStore.appendHero(this.hero);
+        this.yjsstore.heroArray.push(this.hero);
       }
       this.resetHero();
     },
@@ -290,7 +275,6 @@ export default defineComponent({
       this.isEditState = false;
       this.hero = {};
       this.heroModal = false;
-      this.saveLocalStorage();
     },
     clickHero(index, data) {
       this.heroArraySelectIndex = index;
@@ -299,7 +283,8 @@ export default defineComponent({
       this.heroModal = true;
     },
     deleteHero() {
-      this.heroStore.deleteHero(this.heroArraySelectIndex);
+      // this.heroStore.deleteHero(this.heroArraySelectIndex);
+      this.yjsstore.heroArray.splice(this.heroArraySelectIndex, 1);
       this.resetHero();
     },
     // 点击关闭按钮，清楚状态
@@ -308,7 +293,6 @@ export default defineComponent({
       this.hero = {};
     },
     updateJob(index, job) {
-      console.log(job);
       this.hero = { ...this.hero, ...job };
     },
     inputJsonData() {
@@ -323,6 +307,68 @@ export default defineComponent({
     },
     toGithub() {
       window.location.href = "https://github.com/remember-5/dnf-team";
+    },
+    groupArrayChange(index, event) {
+      console.log("groupArrayChange", event, index);
+      if (event.added) {
+        console.log("added");
+        const newIndex = event.added.newIndex;
+        const element = event.added.element;
+        this.yjsstore.groupArray[index].splice(newIndex, 0, element);
+      }
+      if (event.removed) {
+        console.log("removed");
+        const oldIndex = event.removed.oldIndex;
+        this.yjsstore.groupArray[index].splice(oldIndex, 1);
+      }
+      if (event.moved) {
+        console.log("moved");
+        const newIndex = event.moved.newIndex;
+        const oldIndex = event.moved.oldIndex;
+        const newData = JSON.parse(
+          JSON.stringify(this.yjsstore.groupArray[index][newIndex])
+        );
+        const oldData = JSON.parse(
+          JSON.stringify(this.yjsstore.groupArray[index][oldIndex])
+        );
+        console.log("newData", newData);
+        console.log("oldData", oldData);
+        this.yjsstore.groupArray[index].splice(newIndex, 1, oldData);
+        this.yjsstore.groupArray[index].splice(oldIndex, 1, newData);
+      }
+
+      //
+      // this.heroStore.saveLocalStorage();
+    },
+    heroArrayChange(event) {
+      console.log("heroArrayChange", event);
+      if (event.added) {
+        console.log("added");
+        const newIndex = event.added.newIndex;
+        const element = event.added.element;
+        this.yjsstore.heroArray.splice(newIndex, 0, element);
+        console.log("removed");
+      }
+      if (event.removed) {
+        const oldIndex = event.removed.oldIndex;
+        this.yjsstore.heroArray.splice(oldIndex, 1);
+        console.log("removed");
+      }
+      if (event.moved) {
+        console.log("moved");
+        const newIndex = event.moved.newIndex;
+        const oldIndex = event.moved.oldIndex;
+        const newData = JSON.parse(
+          JSON.stringify(this.yjsstore.heroArray[newIndex])
+        );
+        const oldData = JSON.parse(
+          JSON.stringify(this.yjsstore.heroArray[oldIndex])
+        );
+        console.log("newData", newData);
+        console.log("oldData", oldData);
+        this.yjsstore.heroArray.splice(newIndex, 1, oldData);
+        this.yjsstore.heroArray.splice(oldIndex, 1, newData);
+      }
     },
   },
 });
