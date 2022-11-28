@@ -75,6 +75,16 @@
           <n-button size="large" type="error" @click="resetInputJob">
             重置并清除缓存
           </n-button>
+          <n-popconfirm
+            @positive-click="generateShareUrl"
+            negative-text="取消"
+            positive-text="复制链接"
+          >
+            <template #trigger>
+              <n-button size="large" type="error">开启协同</n-button>
+            </template>
+            {{ shareUrl }}
+          </n-popconfirm>
         </div>
 
         <div style="padding-top: 30px">
@@ -84,7 +94,6 @@
           <n-button strong secondary type="tertiary" @click="toGithub">
             Github
           </n-button>
-          <n-input v-model:value="text"></n-input>
         </div>
       </div>
     </n-grid-item>
@@ -148,13 +157,13 @@
       <div>导入数据</div>
     </template>
     <n-input
-      v-model:value="inputData"
+      v-model:value="inputJsonData"
       type="textarea"
       style="height: 300px"
       placeholder="复制json到这里"
     />
     <template #action>
-      <n-button attr-type="button" @click="inputJsonData">保存</n-button>
+      <n-button attr-type="button" @click="doInputJsonData">保存</n-button>
     </template>
   </n-modal>
 </template>
@@ -162,7 +171,7 @@
 <script>
 import { defineComponent, reactive } from "vue";
 
-import { yjsstore } from "./yjs-store.js";
+import { yjsstore, initWebSocket } from "./yjs-store.js";
 import * as Vue from "vue";
 import { enableVueBindings } from "@syncedstore/core";
 
@@ -170,7 +179,11 @@ import { jobArray } from "@/utils/hero.js";
 import draggable from "vuedraggable";
 
 import { heroStore } from "@/stores/counter";
-import { mapStores } from "pinia"; // npm i file-saver
+import { mapStores } from "pinia";
+import router from "@/router"; // npm i file-saver
+
+import useClipboard from "vue-clipboard3";
+import { useNotification } from "naive-ui";
 
 // make SyncedStore use Vuejs internally
 enableVueBindings(Vue);
@@ -185,12 +198,10 @@ export default defineComponent({
   },
   data() {
     return {
-      text: "",
       yjsstore,
-      // groupArray: [],
-      // heroArray: [],
       // 职业列表，tree需要
       jobs: reactive(jobArray),
+      guid: "",
       hero: reactive({
         label: "",
         job: "", // 职业
@@ -205,7 +216,7 @@ export default defineComponent({
       heroModal: false,
       inputDataModal: false,
       // 导入的json
-      inputData: "",
+      inputJsonData: "",
       rules: reactive({
         account: {
           required: true,
@@ -225,18 +236,32 @@ export default defineComponent({
       }),
     };
   },
-  setup() {},
+  setup() {
+    const notification = useNotification();
+    const { toClipboard } = useClipboard()
+    return {
+      warning() {
+        notification.info({
+          content: "复制成功",
+        });
+      },
+      toClipboard,
+    };
+  },
   created() {
+    // 获取参数
+    let queryGuid = router.currentRoute.value.query.guid;
+    console.log("queryGuid: " + queryGuid);
+    if (queryGuid) {
+      this.guid = queryGuid;
+      // 初始化websocket
+      initWebSocket(this.guid);
+    }
     // this.groupArray = yjsstore.groupArray;
     // this.heroArray = yjsstore.heroArray;
   },
   watch: {},
-  mounted() {
-    // this.$nextTick(() => {
-    //   this.groupArray = JSON.parse(JSON.stringify(this.yjsstore.groupArray));
-    //   this.heroArray = JSON.parse(JSON.stringify(this.yjsstore.heroArray));
-    // });
-  },
+  mounted() {},
   computed: {
     ...mapStores(heroStore),
     groupArray: {
@@ -254,6 +279,9 @@ export default defineComponent({
         });
         return JSON.parse(JSON.stringify(this.yjsstore.heroArray));
       },
+    },
+    shareUrl() {
+      return import.meta.env.VITE_HTTP_URL + "?guid=" + this.guid;
     },
   },
   methods: {
@@ -295,12 +323,14 @@ export default defineComponent({
     updateJob(index, job) {
       this.hero = { ...this.hero, ...job };
     },
-    inputJsonData() {
-      this.heroStore.inputJsonData(this.inputData);
+    doInputJsonData() {
+      this.heroStore.inputJsonData(this.inputJsonData);
       this.inputDataModal = false;
     },
     exportData() {
-      this.heroStore.exportJsonData();
+      const _heroArray = JSON.parse(JSON.stringify(this.yjsstore.heroArray));
+      const _groupArray = JSON.parse(JSON.stringify(this.yjsstore.groupArray));
+      this.heroStore.exportJsonData(_heroArray, _groupArray);
     },
     resetInputJob() {
       this.heroStore.resetData();
@@ -369,6 +399,16 @@ export default defineComponent({
         this.yjsstore.heroArray.splice(newIndex, 1, oldData);
         this.yjsstore.heroArray.splice(oldIndex, 1, newData);
       }
+    },
+    /**
+     * 生成分享的url
+     */
+    generateShareUrl() {
+      // this.guid = this.heroStore.guid();
+      // const url = import.meta.env.VITE_HTTP_URL + "?guid=" + this.guid;
+      // console.log(url);
+      this.toClipboard(this.shareUrl);
+      this.warning();
     },
   },
 });

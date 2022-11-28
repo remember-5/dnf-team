@@ -43,12 +43,12 @@ export const heroStore = defineStore("hero", {
         this.groupArray.push([]);
       }
     },
-    exportJsonData() {
+    exportJsonData(heroArray, groupArray) {
       // 导出json文件;
       // new Bolb()第一个参数就是我们要导出的json数据
       let json = {
-        heroArray: this.heroArray,
-        groupArray: this.groupArray,
+        heroArray: heroArray,
+        groupArray: groupArray,
       };
       const blob = new Blob([JSON.stringify(json)], {
         type: "text/plain;charset=utf-8",
@@ -68,6 +68,17 @@ export const heroStore = defineStore("hero", {
       this.heroArray = [];
       localdb.remove("groupArray");
       localdb.remove("heroArray");
+    },
+    guid() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+          var r = (Math.random() * 16) | 0,
+            v = c == "x" ? r : (r & 0x3) | 0x8;
+
+          return v.toString(16);
+        }
+      );
     },
   },
 });

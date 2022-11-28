@@ -17,7 +17,8 @@
     "@syncedstore/core": "^0.4.2",
     "yjs": "^13.5.42",
     "y-websocket": "^1.4.5",
-    "y-webrtc": "^10.2.3"
+    "y-webrtc": "^10.2.3",
+    "vue-clipboard3": "^2.0.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",

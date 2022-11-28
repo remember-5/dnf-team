@@ -16,8 +16,11 @@
   <!--      </nav>-->
   <!--    </div>-->
   <!--  </header>-->
+  <n-notification-provider>
+    <content />
+    <RouterView />
+  </n-notification-provider>
 
-  <RouterView />
 </template>
 
 <style scoped>
