@@ -1,20 +1,56 @@
 <template>
-  <n-grid cols="3" item-responsive responsive="screen">
-    <n-grid-item span="0 m:1 l:2">
-      <div class="light-green">
-        <div v-for="(item, index) in groupArray" :key="index" class="group-box">
-          <span class="troops">队伍{{ index + 1 }}信息</span>
+  <div class="idx">
+    <n-grid cols="3" item-responsive responsive="screen" >
+      <n-grid-item span="0 m:1 l:2">
+        <div class="light-green">
+          <div v-for="(item, index) in groupArray" :key="index" class="group-box">
+            <span class="troops">队伍{{ index + 1 }}信息</span>
+            <draggable
+                class="group-draggable"
+                id="first"
+                data-source="juju"
+                v-model="groupArray[index]"
+                group="a"
+                item-key="name"
+                @change="groupArrayChange(index, $event)"
+            >
+              <template #item="{ element }">
+                <div class="list-group-item">
+                  <n-avatar size="30" :src="element.avatar" />
+                  <div>
+                    <n-gradient-text class="renown" type="info">
+                      职业: {{ element.label }}
+                    </n-gradient-text>
+                    <br />
+                    <n-gradient-text class="idCard" type="error">
+                      id: {{ element.account }}
+                    </n-gradient-text>
+                    <br />
+                    <n-gradient-text class="job-item">
+                      名望: {{ element.reputation }}
+                    </n-gradient-text>
+                  </div>
+                </div>
+              </template>
+            </draggable>
+          </div>
+        </div>
+      </n-grid-item>
+      <n-grid-item>
+        <div class="green group-box">
+          <span class="troops">职业列表</span>
           <draggable
-            class="group-draggable"
-            id="first"
-            data-source="juju"
-            v-model="groupArray[index]"
-            group="a"
-            item-key="name"
-            @change="groupArrayChange(index, $event)"
+              :list="heroArray"
+              class="hero-box"
+              group="a"
+              item-key="name"
+              @change="heroArrayChange"
           >
-            <template #item="{ element }">
-              <div class="list-group-item">
+            <template #item="{ element, index }">
+              <div
+                  class="list-group-item item"
+                  @click="clickHero(index, element)"
+              >
                 <n-avatar size="30" :src="element.avatar" />
                 <div>
                   <n-gradient-text class="renown" type="info">
@@ -32,155 +68,122 @@
               </div>
             </template>
           </draggable>
-        </div>
-      </div>
-    </n-grid-item>
-    <n-grid-item>
-      <div class="green group-box">
-        <span class="troops">职业列表</span>
-        <draggable
-          :list="heroArray"
-          class="hero-box"
-          group="a"
-          item-key="name"
-          @change="heroArrayChange"
-        >
-          <template #item="{ element, index }">
-            <div
-              class="list-group-item item"
-              @click="clickHero(index, element)"
-            >
-              <n-avatar size="30" :src="element.avatar" />
-              <div>
-                <n-gradient-text class="renown" type="info">
-                  职业: {{ element.label }}
-                </n-gradient-text>
-                <br />
-                <n-gradient-text class="idCard" type="error">
-                  id: {{ element.account }}
-                </n-gradient-text>
-                <br />
-                <n-gradient-text class="job-item">
-                  名望: {{ element.reputation }}
-                </n-gradient-text>
-              </div>
-            </div>
-          </template>
-        </draggable>
-        <div class="btn-box">
-          <n-button size="large" type="info" @click="addGroup"
+          <div class="btn-box">
+            <n-button size="large" type="info" @click="addGroup"
             >添加队伍</n-button
-          >
-          <n-button size="large" type="info" @click="this.heroModal = true">
-            新增职业
-          </n-button>
-          <n-popconfirm
-            @negative-click="this.guid = ''"
-            @positive-click="generateShareUrl"
-            negative-text="取消"
-            positive-text="复制链接"
-          >
-            <template #trigger>
-              <n-button
-                size="large"
-                type="error"
-                @click="generateGuid"
-                v-show="!guid"
+            >
+            <n-button size="large" type="info" @click="this.heroModal = true">
+              新增职业
+            </n-button>
+            <n-popconfirm
+                @negative-click="this.guid = ''"
+                @positive-click="generateShareUrl"
+                negative-text="取消"
+                positive-text="复制链接"
+            >
+              <template #trigger>
+                <n-button
+                    size="large"
+                    type="error"
+                    @click="generateGuid"
+                    v-show="!guid"
                 >开启协同</n-button
-              >
-            </template>
-            {{ shareUrl }}
-          </n-popconfirm>
-          <n-button size="large" type="primary" @click="inputDataModal = true">
-            导入
-          </n-button>
-          <n-button size="large" type="warning" @click="exportData"
+                >
+              </template>
+              {{ shareUrl }}
+            </n-popconfirm>
+            <n-button size="large" type="primary" @click="inputDataModal = true">
+              导入
+            </n-button>
+            <n-button size="large" type="warning" @click="exportData"
             >导出</n-button
-          >
-          <n-button size="large" type="error" @click="resetInputJob">
-            重置并清除缓存
-          </n-button>
-        </div>
+            >
+            <n-button size="large" type="error" @click="resetInputJob">
+              重置并清除缓存
+            </n-button>
+          </div>
 
-        <div class="words" style="padding-top: 30px">
-          <p>暂时只支持`职业列表`的修改和删除</p>
-          <p>点击职业头像，即可进入编辑模式</p>
-          源码前往->
-          <a href="https://github.com/remember-5/dnf-team" target="_blank"
+          <div class="words" style="padding-top: 30px">
+            <p>暂时只支持`职业列表`的修改和删除</p>
+            <p>点击职业头像，即可进入编辑模式</p>
+            源码前往->
+            <a href="https://github.com/remember-5/dnf-team" target="_blank"
             >Github</a
-          >
+            >
+          </div>
         </div>
-      </div>
-    </n-grid-item>
-  </n-grid>
+      </n-grid-item>
+    </n-grid>
 
-  <n-modal
-    v-model:show="heroModal"
-    preset="dialog"
-    title="Dialog"
-    @after-leave="clearHero"
-  >
-    <template #header>
-      <div>添加职业</div>
-    </template>
+    <n-modal
+        v-model:show="heroModal"
+        preset="dialog"
+        title="Dialog"
+        @after-leave="clearHero"
+    >
+      <template #header>
+        <div>添加职业</div>
+      </template>
 
-    <div>
-      <n-form
-        ref="formRef"
-        label-width="auto"
-        :model="hero"
-        label-placement="left"
-        :rules="rules"
-        :style="{
+      <div>
+        <n-form
+            ref="formRef"
+            label-width="auto"
+            :model="hero"
+            label-placement="left"
+            :rules="rules"
+            :style="{
           maxWidth: '640px',
         }"
-      >
-        <n-form-item label="职业" path="label">
-          <n-tree-select
-            :options="jobs"
-            :default-value="hero.key"
-            placeholder="选择职业"
-            :disabled="isEditState"
-            @update:value="updateJob"
-          />
-        </n-form-item>
-        <n-form-item label="玩家id" path="account">
-          <n-input v-model:value="hero.account" placeholder="玩家id" />
-        </n-form-item>
-        <n-form-item label="名望" path="reputation">
-          <n-input v-model:value="hero.reputation" placeholder="输入名望" />
-        </n-form-item>
-        <n-form-item label="伤害/奶量" path="dps">
-          <n-input v-model:value="hero.dps" placeholder="输入伤害/奶量" />
-        </n-form-item>
-      </n-form>
-    </div>
-    <template #action>
-      <n-button
-        v-if="isEditState"
-        attr-type="button"
-        type="error"
-        @click="deleteHero"
+        >
+          <n-form-item label="职业" path="label">
+            <n-tree-select
+                :options="jobs"
+                :default-value="hero.key"
+                placeholder="选择职业"
+                :disabled="isEditState"
+                @update:value="updateJob"
+            />
+          </n-form-item>
+          <n-form-item label="玩家id" path="account">
+            <n-input v-model:value="hero.account" placeholder="玩家id" />
+          </n-form-item>
+          <n-form-item label="名望" path="reputation">
+            <n-input v-model:value="hero.reputation" placeholder="输入名望" />
+          </n-form-item>
+          <n-form-item label="伤害/奶量" path="dps">
+            <n-input v-model:value="hero.dps" placeholder="输入伤害/奶量" />
+          </n-form-item>
+        </n-form>
+      </div>
+      <template #action>
+        <n-button
+            v-if="isEditState"
+            attr-type="button"
+            type="error"
+            @click="deleteHero"
         >删除</n-button
-      >
-      <n-button attr-type="button" @click="saveHero">保存</n-button>
-    </template>
-  </n-modal>
+        >
+        <n-button attr-type="button" @click="saveHero">保存</n-button>
+      </template>
+    </n-modal>
 
-  <n-modal v-model:show="inputDataModal" preset="dialog" title="Dialog">
-    <template #header>
-      <div>导入数据</div>
-    </template>
-    <n-input
-      v-model:value="inputJsonData"
-      type="textarea"
-      style="height: 300px"
-      placeholder="复制json到这里"
-    />
-    <template #action>
-      <n-button attr-type="button" @click="doInputJsonData">保存</n-button>
-    </template>
-  </n-modal>
+    <n-modal v-model:show="inputDataModal" preset="dialog" title="Dialog">
+      <template #header>
+        <div>导入数据</div>
+      </template>
+      <n-input
+          v-model:value="inputJsonData"
+          type="textarea"
+          style="height: 300px"
+          placeholder="复制json到这里"
+      />
+      <template #action>
+        <n-button attr-type="button" @click="doInputJsonData">保存</n-button>
+      </template>
+    </n-modal>
+  </div>
+
 </template>
 
 <script>
@@ -269,12 +272,6 @@ export default defineComponent({
     };
   },
   created() {
-    document
-      .querySelector("body")
-      .setAttribute(
-        "style",
-        "background: url(src/assets/avatar/background.jpg) fixed no-repeat 100% 100%"
-      );
     // 获取参数
     let queryGuid = router.currentRoute.value.query.guid;
     console.log("queryGuid: " + queryGuid);
@@ -459,6 +456,11 @@ export default defineComponent({
 </script>
 
 <style scoped="scoped">
+.idx {
+  height: 1024px;
+  background: url("@/assets/avatar/background.jpg") fixed no-repeat 100% 100%;
+}
+
 .light-green {
   background-color: rgba(0, 0, 0, 0.5);
 }
