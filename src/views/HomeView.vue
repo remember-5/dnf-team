@@ -3,7 +3,7 @@
     <n-grid-item span="0 m:1 l:2">
       <div class="light-green">
         <div v-for="(item, index) in groupArray" :key="index" class="group-box">
-          <span>队伍{{ index + 1 }}信息</span>
+          <span class="troops">队伍{{ index + 1 }}信息</span>
           <draggable
             class="group-draggable"
             id="first"
@@ -17,11 +17,11 @@
               <div class="list-group-item">
                 <n-avatar size="30" :src="element.avatar" />
                 <div>
-                  <n-gradient-text type="error">
+                  <n-gradient-text class="idCard" type="error">
                     id: {{ element.account }}
                   </n-gradient-text>
                   &nbsp;
-                  <n-gradient-text type="info">
+                  <n-gradient-text class="renown" type="info">
                     名望: {{ element.reputation }}
                   </n-gradient-text>
                 </div>
@@ -29,14 +29,14 @@
             </template>
           </draggable>
         </div>
-        <div style="float: right">
+        <!-- <div style="float: right">
           <n-button type="info" @click="addGroup">添加队伍</n-button>
-        </div>
+        </div> -->
       </div>
     </n-grid-item>
     <n-grid-item>
       <div class="green">
-        <span>职业列表</span>
+        <span class="troops">职业列表</span>
         <draggable
           :list="heroArray"
           class="hero-box"
@@ -51,11 +51,11 @@
             >
               <n-avatar size="30" :src="element.avatar" />
               <div>
-                <n-gradient-text type="error">
+                <n-gradient-text class="idCard" type="error">
                   id: {{ element.account }}
                 </n-gradient-text>
                 &nbsp;
-                <n-gradient-text type="info">
+                <n-gradient-text class="renown" type="info">
                   名望: {{ element.reputation }}
                 </n-gradient-text>
               </div>
@@ -76,6 +76,7 @@
             重置并清除缓存
           </n-button>
           <n-popconfirm
+            @negative-click="this.guid = ''"
             @positive-click="generateShareUrl"
             negative-text="取消"
             positive-text="复制链接"
@@ -91,13 +92,22 @@
             </template>
             {{ shareUrl }}
           </n-popconfirm>
+          <n-button size="large" type="info" @click="addGroup"
+            >添加队伍</n-button
+          >
         </div>
 
-        <div style="padding-top: 30px">
+        <div class="words" style="padding-top: 30px">
           <p>暂时只支持`职业列表`的修改和删除</p>
           <p>点击职业头像，即可进入编辑模式</p>
           源码前往->
-          <n-button strong secondary type="tertiary" @click="toGithub">
+          <n-button
+            class="github"
+            strong
+            secondary
+            type="tertiary"
+            @click="toGithub"
+          >
             Github
           </n-button>
         </div>
@@ -255,6 +265,12 @@ export default defineComponent({
     };
   },
   created() {
+    document
+      .querySelector("body")
+      .setAttribute(
+        "style",
+        "background: url(src/assets/avatar/background.jpg) fixed no-repeat 100% 100%"
+      );
     // 获取参数
     let queryGuid = router.currentRoute.value.query.guid;
     console.log("queryGuid: " + queryGuid);
@@ -425,7 +441,7 @@ export default defineComponent({
       // 初始化websocket
       initWebSocket(this.guid);
       // window.location.href = window.location.href + "?guid=" + this.guid;
-      this.$router.push({path:'/',query:{guid:this.guid}});
+      this.$router.push({ path: "/", query: { guid: this.guid } });
 
       // 同步现有数据到房间
     },
@@ -435,26 +451,79 @@ export default defineComponent({
 
 <style scoped="scoped">
 .light-green {
-  background-color: rgba(0, 128, 0, 0.12);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 .green {
-  background-color: rgba(0, 128, 0, 0.24);
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  width: 33.4%;
+  height: 100%;
+  padding: 10px;
 }
 
 .group-box {
   padding-left: 30px;
   padding-right: 30px;
-  padding-bottom: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
 }
 .group-draggable {
-  border-style: solid;
   padding: 10px;
   height: 120px;
   display: flex;
+  border: 2px solid #0ae642;
 }
 .hero-box {
   min-height: 300px;
-  border-style: solid;
   display: flex;
+  border: 2px solid #0ae642;
+  margin-right: 20px;
+}
+.troops {
+  font-size: 22px;
+  color: chartreuse;
+  /* text-shadow: 0 0 0.5em #0ae642, 0 0 0.2em #5c5c5c; */
+  letter-spacing: 0.2rem;
+}
+.btn-box button {
+  margin: 10px 5px;
+}
+.words {
+  padding: 30px;
+  position: fixed;
+  bottom: 10%;
+  letter-spacing: 0.2rem;
+  font-size: 1.5rem;
+  background-image: -webkit-linear-gradient(
+    left,
+    chartreuse,
+    darkorange 25%,
+    chartreuse 50%,
+    darkorange 75%,
+    chartreuse
+  );
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-background-size: 200% 100%;
+}
+.github {
+  -webkit-text-fill-color: limegreen;
+}
+.btn-box button,
+.btn-box button:focus {
+  opacity: 0.9;
+  color: chartreuse;
+  background-color: transparent;
+}
+/deep/.n-input-wrapper {
+  -webkit-text-fill-color: darkcyan;
+}
+.renown {
+  color: chartreuse;
+}
+.idCard {
+  color: darkorange;
 }
 </style>
