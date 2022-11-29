@@ -26,6 +26,16 @@ export const heroStore = defineStore("hero", {
     appendGroup(group) {
       this.groupArray.push(group);
     },
+    /**
+     * 保存到缓存和pinia
+     * @param heroArray
+     * @param groupArray
+     */
+    save(heroArray, groupArray) {
+      this.heroArray = heroArray;
+      this.groupArray = groupArray;
+      this.saveLocalStorage();
+    },
     saveLocalStorage() {
       localdb.save("heroArray", this.heroArray);
       localdb.save("groupArray", this.groupArray);

@@ -81,7 +81,13 @@
             positive-text="复制链接"
           >
             <template #trigger>
-              <n-button size="large" type="error">开启协同</n-button>
+              <n-button
+                size="large"
+                type="error"
+                @click="generateGuid"
+                v-show="!guid"
+                >开启协同</n-button
+              >
             </template>
             {{ shareUrl }}
           </n-popconfirm>
@@ -238,11 +244,11 @@ export default defineComponent({
   },
   setup() {
     const notification = useNotification();
-    const { toClipboard } = useClipboard()
+    const { toClipboard } = useClipboard();
     return {
-      warning() {
+      info() {
         notification.info({
-          content: "复制成功",
+          content: "复制成功,已开启协同",
         });
       },
       toClipboard,
@@ -400,6 +406,9 @@ export default defineComponent({
         this.yjsstore.heroArray.splice(oldIndex, 1, newData);
       }
     },
+    generateGuid() {
+      this.guid = this.heroStore.guid();
+    },
     /**
      * 生成分享的url
      */
@@ -408,7 +417,17 @@ export default defineComponent({
       // const url = import.meta.env.VITE_HTTP_URL + "?guid=" + this.guid;
       // console.log(url);
       this.toClipboard(this.shareUrl);
-      this.warning();
+      this.info();
+      // 设置缓存
+      const groupArray = JSON.parse(JSON.stringify(this.yjsstore.groupArray));
+      const heroArray = JSON.parse(JSON.stringify(this.yjsstore.heroArray));
+      this.heroStore.save(heroArray, groupArray);
+      // 初始化websocket
+      initWebSocket(this.guid);
+      // window.location.href = window.location.href + "?guid=" + this.guid;
+      this.$router.push({path:'/',query:{guid:this.guid}});
+
+      // 同步现有数据到房间
     },
   },
 });
