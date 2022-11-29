@@ -17,11 +17,15 @@
               <div class="list-group-item">
                 <n-avatar size="30" :src="element.avatar" />
                 <div>
+                  <n-gradient-text class="renown" type="info">
+                    职业: {{ element.label }}
+                  </n-gradient-text>
+                  <br />
                   <n-gradient-text class="idCard" type="error">
                     id: {{ element.account }}
                   </n-gradient-text>
-                  &nbsp;
-                  <n-gradient-text class="renown" type="info">
+                  <br />
+                  <n-gradient-text class="job-item">
                     名望: {{ element.reputation }}
                   </n-gradient-text>
                 </div>
@@ -29,13 +33,10 @@
             </template>
           </draggable>
         </div>
-        <!-- <div style="float: right">
-          <n-button type="info" @click="addGroup">添加队伍</n-button>
-        </div> -->
       </div>
     </n-grid-item>
     <n-grid-item>
-      <div class="green">
+      <div class="green group-box">
         <span class="troops">职业列表</span>
         <draggable
           :list="heroArray"
@@ -51,11 +52,15 @@
             >
               <n-avatar size="30" :src="element.avatar" />
               <div>
+                <n-gradient-text class="renown" type="info">
+                  职业: {{ element.label }}
+                </n-gradient-text>
+                <br />
                 <n-gradient-text class="idCard" type="error">
                   id: {{ element.account }}
                 </n-gradient-text>
-                &nbsp;
-                <n-gradient-text class="renown" type="info">
+                <br />
+                <n-gradient-text class="job-item">
                   名望: {{ element.reputation }}
                 </n-gradient-text>
               </div>
@@ -63,17 +68,11 @@
           </template>
         </draggable>
         <div class="btn-box">
-          <n-button size="large" type="info" @click="this.heroModal = true">
-            新增
-          </n-button>
-          <n-button size="large" type="primary" @click="inputDataModal = true">
-            导入
-          </n-button>
-          <n-button size="large" type="warning" @click="exportData"
-            >导出</n-button
+          <n-button size="large" type="info" @click="addGroup"
+            >添加队伍</n-button
           >
-          <n-button size="large" type="error" @click="resetInputJob">
-            重置并清除缓存
+          <n-button size="large" type="info" @click="this.heroModal = true">
+            新增职业
           </n-button>
           <n-popconfirm
             @negative-click="this.guid = ''"
@@ -92,24 +91,24 @@
             </template>
             {{ shareUrl }}
           </n-popconfirm>
-          <n-button size="large" type="info" @click="addGroup"
-            >添加队伍</n-button
+          <n-button size="large" type="primary" @click="inputDataModal = true">
+            导入
+          </n-button>
+          <n-button size="large" type="warning" @click="exportData"
+            >导出</n-button
           >
+          <n-button size="large" type="error" @click="resetInputJob">
+            重置并清除缓存
+          </n-button>
         </div>
 
         <div class="words" style="padding-top: 30px">
           <p>暂时只支持`职业列表`的修改和删除</p>
           <p>点击职业头像，即可进入编辑模式</p>
           源码前往->
-          <n-button
-            class="github"
-            strong
-            secondary
-            type="tertiary"
-            @click="toGithub"
+          <a href="https://github.com/remember-5/dnf-team" target="_blank"
+            >Github</a
           >
-            Github
-          </n-button>
         </div>
       </div>
     </n-grid-item>
@@ -261,6 +260,11 @@ export default defineComponent({
           content: "复制成功,已开启协同",
         });
       },
+      warn() {
+        notification.warning({
+          content: "请选择职业！",
+        });
+      },
       toClipboard,
     };
   },
@@ -312,6 +316,11 @@ export default defineComponent({
     },
     // 保存职业
     saveHero() {
+      if (!this.hero.label) {
+        this.warn();
+        return;
+      }
+
       // 编辑状态
       if (this.isEditState) {
         this.heroArray[this.heroArraySelectIndex] = this.hero;
@@ -358,7 +367,7 @@ export default defineComponent({
       this.heroStore.resetData();
     },
     toGithub() {
-      window.location.href = "https://github.com/remember-5/dnf-team";
+      window.location.href = "";
     },
     groupArrayChange(index, event) {
       console.log("groupArrayChange", event, index);
@@ -471,7 +480,7 @@ export default defineComponent({
 }
 .group-draggable {
   padding: 10px;
-  height: 120px;
+  height: 160px;
   display: flex;
   border: 2px solid #0ae642;
 }
@@ -525,5 +534,11 @@ export default defineComponent({
 }
 .idCard {
   color: darkorange;
+}
+.job-item {
+  color: greenyellow;
+}
+.list-group-item {
+  padding: 10px;
 }
 </style>
