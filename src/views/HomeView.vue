@@ -465,6 +465,10 @@ export default defineComponent({
 <style scoped="scoped">
 .idx {
   background: url("@/assets/avatar/background.jpg") fixed no-repeat 100% 100%;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .light-green {
@@ -474,9 +478,8 @@ export default defineComponent({
   background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
   top: 0;
-  width: 33.4%;
+  width: 30%;
   height: 100%;
-  padding: 10px;
 }
 
 .group-box {
@@ -524,6 +527,10 @@ export default defineComponent({
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   -webkit-background-size: 200% 100%;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  z-index: -1;
 }
 .github {
   -webkit-text-fill-color: limegreen;
