@@ -1,18 +1,22 @@
 <template>
   <div class="idx">
-    <n-grid cols="3" item-responsive responsive="screen" >
+    <n-grid cols="3" item-responsive responsive="screen">
       <n-grid-item span="0 m:1 l:2">
         <div class="light-green">
-          <div v-for="(item, index) in groupArray" :key="index" class="group-box">
+          <div
+            v-for="(item, index) in groupArray"
+            :key="index"
+            class="group-box"
+          >
             <span class="troops">队伍{{ index + 1 }}信息</span>
             <draggable
-                class="group-draggable"
-                id="first"
-                data-source="juju"
-                v-model="groupArray[index]"
-                group="a"
-                item-key="name"
-                @change="groupArrayChange(index, $event)"
+              class="group-draggable"
+              id="first"
+              data-source="juju"
+              v-model="groupArray[index]"
+              group="a"
+              item-key="name"
+              @change="groupArrayChange(index, $event)"
             >
               <template #item="{ element }">
                 <div class="list-group-item">
@@ -40,16 +44,16 @@
         <div class="green group-box">
           <span class="troops">职业列表</span>
           <draggable
-              :list="heroArray"
-              class="hero-box"
-              group="a"
-              item-key="name"
-              @change="heroArrayChange"
+            :list="heroArray"
+            class="hero-box"
+            group="a"
+            item-key="name"
+            @change="heroArrayChange"
           >
             <template #item="{ element, index }">
               <div
-                  class="list-group-item item"
-                  @click="clickHero(index, element)"
+                class="list-group-item item"
+                @click="clickHero(index, element)"
               >
                 <n-avatar size="30" :src="element.avatar" />
                 <div>
@@ -70,33 +74,37 @@
           </draggable>
           <div class="btn-box">
             <n-button size="large" type="info" @click="addGroup"
-            >添加队伍</n-button
+              >添加队伍</n-button
             >
             <n-button size="large" type="info" @click="this.heroModal = true">
               新增职业
             </n-button>
             <n-popconfirm
-                @negative-click="this.guid = ''"
-                @positive-click="generateShareUrl"
-                negative-text="取消"
-                positive-text="复制链接"
+              @negative-click="this.guid = ''"
+              @positive-click="generateShareUrl"
+              negative-text="取消"
+              positive-text="复制链接"
             >
               <template #trigger>
                 <n-button
-                    size="large"
-                    type="error"
-                    @click="generateGuid"
-                    v-show="!guid"
-                >开启协同</n-button
+                  size="large"
+                  type="error"
+                  @click="generateGuid"
+                  v-show="!guid"
+                  >开启协同</n-button
                 >
               </template>
               {{ shareUrl }}
             </n-popconfirm>
-            <n-button size="large" type="primary" @click="inputDataModal = true">
+            <n-button
+              size="large"
+              type="primary"
+              @click="inputDataModal = true"
+            >
               导入
             </n-button>
             <n-button size="large" type="warning" @click="exportData"
-            >导出</n-button
+              >导出</n-button
             >
             <n-button size="large" type="error" @click="resetInputJob">
               重置并清除缓存
@@ -108,7 +116,7 @@
             <p>点击职业头像，即可进入编辑模式</p>
             源码前往->
             <a href="https://github.com/remember-5/dnf-team" target="_blank"
-            >Github</a
+              >Github</a
             >
           </div>
         </div>
@@ -116,10 +124,10 @@
     </n-grid>
 
     <n-modal
-        v-model:show="heroModal"
-        preset="dialog"
-        title="Dialog"
-        @after-leave="clearHero"
+      v-model:show="heroModal"
+      preset="dialog"
+      title="Dialog"
+      @after-leave="clearHero"
     >
       <template #header>
         <div>添加职业</div>
@@ -127,22 +135,22 @@
 
       <div>
         <n-form
-            ref="formRef"
-            label-width="auto"
-            :model="hero"
-            label-placement="left"
-            :rules="rules"
-            :style="{
-          maxWidth: '640px',
-        }"
+          ref="formRef"
+          label-width="auto"
+          :model="hero"
+          label-placement="left"
+          :rules="rules"
+          :style="{
+            maxWidth: '640px',
+          }"
         >
           <n-form-item label="职业" path="label">
             <n-tree-select
-                :options="jobs"
-                :default-value="hero.key"
-                placeholder="选择职业"
-                :disabled="isEditState"
-                @update:value="updateJob"
+              :options="jobs"
+              :default-value="hero.key"
+              placeholder="选择职业"
+              :disabled="isEditState"
+              @update:value="updateJob"
             />
           </n-form-item>
           <n-form-item label="玩家id" path="account">
@@ -158,11 +166,11 @@
       </div>
       <template #action>
         <n-button
-            v-if="isEditState"
-            attr-type="button"
-            type="error"
-            @click="deleteHero"
-        >删除</n-button
+          v-if="isEditState"
+          attr-type="button"
+          type="error"
+          @click="deleteHero"
+          >删除</n-button
         >
         <n-button attr-type="button" @click="saveHero">保存</n-button>
       </template>
@@ -173,17 +181,16 @@
         <div>导入数据</div>
       </template>
       <n-input
-          v-model:value="inputJsonData"
-          type="textarea"
-          style="height: 300px"
-          placeholder="复制json到这里"
+        v-model:value="inputJsonData"
+        type="textarea"
+        style="height: 300px"
+        placeholder="复制json到这里"
       />
       <template #action>
         <n-button attr-type="button" @click="doInputJsonData">保存</n-button>
       </template>
     </n-modal>
   </div>
-
 </template>
 
 <script>
@@ -457,7 +464,6 @@ export default defineComponent({
 
 <style scoped="scoped">
 .idx {
-  height: 1024px;
   background: url("@/assets/avatar/background.jpg") fixed no-repeat 100% 100%;
 }
 
