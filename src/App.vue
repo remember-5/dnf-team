@@ -17,12 +17,10 @@
   <!--    </div>-->
   <!--  </header>-->
   <n-notification-provider>
-    <content />
-    <RouterView />
+    <n-message-provider>
+      <RouterView />
+    </n-message-provider>
   </n-notification-provider>
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
