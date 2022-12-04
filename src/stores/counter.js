@@ -1,7 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import localdb from "@/utils/localstorage";
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver"; // npm i file-saver
 
 export const useCounterStore = defineStore("counter", () => {
   const count = ref(0);

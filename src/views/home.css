@@ -1,4 +1,4 @@
-.idx {
+.index-box {
     background: url("@/assets/avatar/background.jpg");
     background-size: 100% 100%;
     position: absolute;
@@ -32,10 +32,12 @@
     border: 2px solid #0ae642;
 }
 .hero-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     min-height: 300px;
-    display: flex;
     border: 2px solid #0ae642;
     margin-right: 20px;
+    grid-template-rows: 180px 180px;
 }
 .troops {
     font-size: 22px;

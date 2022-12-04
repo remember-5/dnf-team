@@ -1,7 +1,7 @@
 <template>
-  <div class="idx">
-    <n-grid cols="3" item-responsive responsive="screen">
-      <n-grid-item span="0 m:1 l:2">
+  <div class="index-box">
+    <n-grid cols="3" item-responsive>
+      <n-gi span="0 400:1 600:2 800:2">
         <div class="light-green">
           <div
             v-for="(item, groupIndex) in groupArray"
@@ -42,8 +42,8 @@
             </draggable>
           </div>
         </div>
-      </n-grid-item>
-      <n-grid-item>
+      </n-gi>
+      <n-gi>
         <div class="green group-box">
           <span class="troops">职业列表</span>
           <draggable
@@ -54,10 +54,7 @@
             @change="heroArrayChange"
           >
             <template #item="{ element, index }">
-              <div
-                class="list-group-item item"
-                @click="clickHero(index, element)"
-              >
+              <div class="list-group-item" @click="clickHero(index, element)">
                 <n-avatar size="30" :src="element.avatar" />
                 <div>
                   <n-gradient-text class="renown" type="info">
@@ -75,6 +72,7 @@
               </div>
             </template>
           </draggable>
+
           <div class="btn-box">
             <n-button size="large" type="info" @click="addGroup"
               >添加队伍</n-button
@@ -122,9 +120,10 @@
             >
           </div>
         </div>
-      </n-grid-item>
+      </n-gi>
     </n-grid>
 
+    <!-- 新增hero -->
     <n-modal
       v-model:show="heroModal"
       preset="dialog"
@@ -195,7 +194,6 @@
         <n-button attr-type="button" @click="saveHero">保存</n-button>
       </template>
     </n-modal>
-
     <!--  导入数据  -->
     <n-modal v-model:show="inputDataModal" preset="dialog" title="Dialog">
       <template #header>
@@ -226,7 +224,7 @@ import draggable from "vuedraggable";
 
 import { heroStore } from "@/stores/counter";
 import { mapStores } from "pinia";
-import router from "@/router"; // npm i file-saver
+import router from "@/router";
 
 import useClipboard from "vue-clipboard3";
 import { useNotification, useMessage } from "naive-ui";
@@ -235,10 +233,18 @@ import { useNotification, useMessage } from "naive-ui";
 enableVueBindings(Vue);
 
 export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "dnf",
-  display: "asd",
-  order: 14,
+  setup() {
+    const notification = useNotification();
+    const { toClipboard } = useClipboard();
+    const formRef = reactive(null);
+    const message = useMessage();
+    return {
+      formRef,
+      notification,
+      message,
+      toClipboard,
+    };
+  },
   components: {
     draggable,
   },
@@ -291,7 +297,7 @@ export default defineComponent({
             if (!value) {
               return new Error("需要名望");
             } else if (Number(value) < 0) {
-              return new Error("输出不是负数！");
+              return new Error("名望不是负数！");
             }
             return true;
           },
@@ -303,32 +309,6 @@ export default defineComponent({
         2: "奶",
         3: "混子",
       },
-    };
-  },
-  setup() {
-    const notification = useNotification();
-    const { toClipboard } = useClipboard();
-    const formRef = reactive(null);
-    const message = useMessage();
-    return {
-      formRef,
-      message(msg) {
-        message.info(msg);
-      },
-      error(msg) {
-        message.error(msg);
-      },
-      info() {
-        notification.info({
-          content: "复制成功,已开启协同",
-        });
-      },
-      warn() {
-        notification.warning({
-          content: "请选择职业！",
-        });
-      },
-      toClipboard,
     };
   },
   created() {
@@ -370,7 +350,9 @@ export default defineComponent({
     // 保存职业
     saveHero() {
       if (!this.hero.label) {
-        this.warn();
+        this.notification.warning({
+          content: "请选择职业",
+        });
         return;
       }
       this.$refs.formRef.validate((errors) => {
@@ -389,14 +371,15 @@ export default defineComponent({
                 this.hero
               );
             }
-            this.message("保存成功");
+            this.message.info("修改成功");
           } else {
             this.yjsstore.heroArray.push(this.hero);
+            this.message.info("保存成功");
           }
           this.resetHero();
         } else {
           // console.log(errors);
-          this.error("验证失败");
+          this.message.error("验证失败");
         }
       });
     },
@@ -534,7 +517,9 @@ export default defineComponent({
      */
     generateShareUrl() {
       this.toClipboard(this.shareUrl);
-      this.info();
+      this.notification.info({
+        content: "复制成功,已开启协同",
+      });
       // 设置缓存
       const groupArray = JSON.parse(JSON.stringify(this.yjsstore.groupArray));
       const heroArray = JSON.parse(JSON.stringify(this.yjsstore.heroArray));
@@ -542,7 +527,6 @@ export default defineComponent({
       // 初始化websocket
       initWebSocket(this.guid);
       this.enableCollaborate = true;
-      // window.location.href = window.location.href + "?guid=" + this.guid;
       this.$router.push({ path: "/", query: { guid: this.guid } });
       // 同步现有数据到房间
     },
@@ -586,6 +570,6 @@ export default defineComponent({
 });
 </script>
 
-<style scoped="scoped">
+<style scoped>
 @import "home.css";
 </style>
