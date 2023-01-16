@@ -9,7 +9,7 @@ specifiers:
   eslint: ^8.22.0
   eslint-plugin-vue: ^9.3.0
   file-saver: ^2.0.5
-  naive-ui: ^2.34.2
+  naive-ui: ^2.34.3
   pinia: ^2.0.26
   prettier: ^2.7.1
   unplugin-auto-import: ^0.11.5
@@ -43,7 +43,7 @@ devDependencies:
   '@vue/eslint-config-prettier': 7.0.0_5qrnzwqb344w6up62gv3safeoi
   eslint: 8.28.0
   eslint-plugin-vue: 9.8.0_eslint@8.28.0
-  naive-ui: 2.34.2_vue@3.2.45
+  naive-ui: 2.34.3_vue@3.2.45
   prettier: 2.8.0
   unplugin-auto-import: 0.11.5
   unplugin-vue-components: 0.22.11_vue@3.2.45
@@ -1907,8 +1907,8 @@ packages:
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
 
-  /naive-ui/2.34.2_vue@3.2.45:
-    resolution: {integrity: sha512-JyvtVqHzS0O0DyPFFg95cJW0fp2WCEPsjXbeplkxFIfJHCgp5KC75PjnBycryegjPiZNLn9WlRDxXU5emEqRfg==}
+  /naive-ui/2.34.3_vue@3.2.45:
+    resolution: {integrity: sha512-fUMr0dzb/iGsOTWgoblPVobY5X5dihQ1eam5dA+H74oyLYAvgX4pL96xQFPBLIYqvyRFBAsN85kHN5pLqdtpxA==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:

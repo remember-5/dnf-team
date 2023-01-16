@@ -1,0 +1,96 @@
+.index-box {
+    background: url("@/assets/avatar/background2.jpg");
+    background-size: 100% 100%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.light-green {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.green {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    width: 30%;
+    height: 100%;
+}
+
+.group-box {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+}
+.group-draggable {
+    padding: 10px;
+    height: 160px;
+    display: flex;
+    border: 2px solid #0ae642;
+}
+.hero-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    min-height: 300px;
+    border: 2px solid #0ae642;
+    margin-right: 20px;
+    grid-template-rows: 180px 180px;
+}
+.troops {
+    font-size: 22px;
+    color: chartreuse;
+    /* text-shadow: 0 0 0.5em #0ae642, 0 0 0.2em #5c5c5c; */
+    letter-spacing: 0.2rem;
+}
+.btn-box button {
+    margin: 10px 5px;
+}
+.words {
+    padding: 30px;
+    position: fixed;
+    bottom: 10%;
+    letter-spacing: 0.2rem;
+    font-size: 1.5rem;
+    background-image: -webkit-linear-gradient(
+            left,
+            chartreuse,
+            darkorange 25%,
+            chartreuse 50%,
+            darkorange 75%,
+            chartreuse
+    );
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-background-size: 200% 100%;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+    z-index: -1;
+}
+.github {
+    -webkit-text-fill-color: limegreen;
+}
+.btn-box button,
+.btn-box button:focus {
+    opacity: 0.9;
+    color: chartreuse;
+    background-color: transparent;
+}
+/deep/.n-input-wrapper {
+    -webkit-text-fill-color: darkcyan;
+}
+.renown {
+    color: chartreuse;
+}
+.idCard {
+    color: darkorange;
+}
+.job-item {
+    color: greenyellow;
+}
+.list-group-item {
+    padding: 10px;
+}

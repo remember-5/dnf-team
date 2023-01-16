@@ -8,7 +8,7 @@
             :key="groupIndex"
             class="group-box"
           >
-            <span class="troops">队伍{{ groupIndex + 1 }}信息</span>
+            <span class="troops">第{{ groupIndex + 1 }}波</span>
             <draggable
               class="group-draggable"
               id="first"
@@ -233,6 +233,7 @@ import { useNotification, useMessage } from "naive-ui";
 enableVueBindings(Vue);
 
 export default defineComponent({
+  name: "BaKaEr",
   setup() {
     const notification = useNotification();
     const { toClipboard } = useClipboard();
@@ -340,7 +341,7 @@ export default defineComponent({
      * @returns {string}
      */
     shareUrl() {
-      return `${import.meta.env.VITE_HTTP_URL}?guid=${this.guid}`;
+      return `${import.meta.env.VITE_HTTP_URL}/juntuan?guid=${this.guid}`;
     },
   },
   methods: {
@@ -527,7 +528,7 @@ export default defineComponent({
       // 初始化websocket
       initWebSocket(this.guid);
       this.enableCollaborate = true;
-      this.$router.push({ path: "/", query: { guid: this.guid } });
+      this.$router.push({ path: "/juntuan", query: { guid: this.guid } });
       // 同步现有数据到房间
     },
     /**
@@ -571,5 +572,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "home.css";
+@import "@/views/bakaer/index.css";
 </style>
